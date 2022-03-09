@@ -1,6 +1,5 @@
 package com.starwarsresistence.projetofinal.service;
 
-import com.starwarsresistence.projetofinal.model.LocalizationModel;
 import com.starwarsresistence.projetofinal.model.RebelModel;
 import com.starwarsresistence.projetofinal.repository.RebelRepository;
 
