@@ -1,7 +1,10 @@
 package com.starwarsresistence.projetofinal.service;
 
+import com.starwarsresistence.projetofinal.model.LocalizationModel;
 import com.starwarsresistence.projetofinal.model.RebelModel;
 import com.starwarsresistence.projetofinal.repository.RebelRepository;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,13 +17,16 @@ public class RebelService {
     @Autowired
     private RebelRepository rebelRepository;
 
-    public List<RebelModel> findAll(){
+    public List<RebelModel> findAll() {
         return rebelRepository.findAll();
     }
 
     @Transactional
-    public RebelModel save(RebelModel rebelModel){
+    public RebelModel save(RebelModel rebelModel) {
         return rebelRepository.save(rebelModel);
     }
 
+    public RebelModel findById(ObjectId id) {
+        return rebelRepository.findById(id).get();
+    }
 }

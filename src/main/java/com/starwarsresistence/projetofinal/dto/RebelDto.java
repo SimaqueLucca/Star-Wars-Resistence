@@ -8,18 +8,18 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 public class RebelDto {
 
     @NotBlank
     private String name;
     @NotBlank
     private Integer age;
-    @NotBlank @Size(max = 1)
+    @NotBlank
+    @Size(max = 1)
     private Character gender;
     @NotBlank
     private LocalizationModel localization;
     private List<ItemModel> items;
 }
-
-
