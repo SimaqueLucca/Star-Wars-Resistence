@@ -1,10 +1,11 @@
 package com.starwarsresistence.projetofinal.dto;
 
 import com.starwarsresistence.projetofinal.model.ItemModel;
-import com.starwarsresistence.projetofinal.model.LocalizationModel;
 import lombok.Getter;
 import lombok.Setter;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -12,14 +13,16 @@ import java.util.List;
 @Setter
 public class RebelDto {
 
-    @NotBlank
+    @NotBlank(message = "Field name cannot be null")
     private String name;
-    @NotBlank
+
+    @NotNull(message = "Field age cannot be null")
     private Integer age;
-    @NotBlank
+
+    @NotNull(message = "Field gender cannot be null")
     @Size(max = 1)
-    private Character gender;
-    @NotBlank
-    private LocalizationModel localization;
+    private String gender;
+
+    @NotEmpty(message = "items cannot be null")
     private List<ItemModel> items;
 }
