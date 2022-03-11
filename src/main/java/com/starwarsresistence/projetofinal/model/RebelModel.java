@@ -21,6 +21,6 @@ public class RebelModel {
     private Integer age;
     private Character gender;
     private LocalizationModel localization;
-    private List<ItemModel> items;
+    private List<ItemEnum> items;
     private Integer traitorCount;
 }

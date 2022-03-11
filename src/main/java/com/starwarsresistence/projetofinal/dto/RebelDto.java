@@ -1,6 +1,6 @@
 package com.starwarsresistence.projetofinal.dto;
 
-import com.starwarsresistence.projetofinal.model.ItemModel;
+import com.starwarsresistence.projetofinal.model.ItemEnum;
 import lombok.Getter;
 import lombok.Setter;
 import javax.validation.constraints.NotBlank;
@@ -24,5 +24,5 @@ public class RebelDto {
     private String gender;
 
     @NotEmpty(message = "items cannot be null")
-    private List<ItemModel> items;
+    private List<ItemEnum> items;
 }
