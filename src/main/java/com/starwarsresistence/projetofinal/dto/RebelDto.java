@@ -14,6 +14,7 @@ import java.util.List;
 public class RebelDto {
 
     @NotBlank(message = "Field name cannot be null")
+    @Size(min = 2)
     private String name;
 
     @NotNull(message = "Field age cannot be null")
