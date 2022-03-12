@@ -19,7 +19,7 @@ public class RebelModel {
 
     private String name;
     private Integer age;
-    private Character gender;
+    private String gender;
     private LocalizationModel localization;
     private List<ItemEnum> items;
     private Integer traitorCount;

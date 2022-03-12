@@ -1,8 +1,11 @@
 package com.starwarsresistence.projetofinal.dto;
 
 import com.starwarsresistence.projetofinal.model.ItemEnum;
+import com.starwarsresistence.projetofinal.model.LocalizationModel;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -26,4 +29,6 @@ public class RebelDto {
 
     @NotEmpty(message = "items cannot be null")
     private List<ItemEnum> items;
+
+    private LocalizationModel localization;
 }
