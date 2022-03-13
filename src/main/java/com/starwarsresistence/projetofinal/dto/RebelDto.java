@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.validation.executable.ValidateOnExecution;
 import java.util.List;
 
 @Getter
@@ -28,7 +29,7 @@ public class RebelDto {
     private String gender;
 
     @NotEmpty(message = "items cannot be null")
-    private List<ItemEnum> items;
+    private List<String> items;
 
-    private LocalizationModel localization;
+    private LocalizationDto localization;
 }

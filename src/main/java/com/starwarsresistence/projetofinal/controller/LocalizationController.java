@@ -19,6 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.starwarsresistence.projetofinal.model.LocalizationEnum.ConvertEnum;
+import static com.starwarsresistence.projetofinal.model.LocalizationEnum.PlanetExist;
+
 @RestController
 @RequestMapping("/localization")
 public class LocalizationController {
@@ -27,19 +30,29 @@ public class LocalizationController {
     private RebelService rebelService;
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> changeLocalization(@RequestBody @Valid LocalizationDto localizationDto, @PathVariable ObjectId id){
+    public ResponseEntity<Object> changeLocalization(@RequestBody @Valid LocalizationDto localizationDto, @PathVariable ObjectId id) {
+
+        Boolean planetExistResult = PlanetExist(localizationDto.getPlanetName().toString());
+
+        if (!planetExistResult) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reported items do not exist. Available items: TATOOINE, ALDERAAN, YAVIN, HOTH, DAGOBAH, BESPIN, ENDOR, NABOO, CORUSCANT, KAMINO ");
+        }
+
         Optional<RebelModel> rebelModelOptional = rebelService.findById(id);
 
         if (!rebelModelOptional.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rebel not found");
         }
+
         RebelModel rebelModel = new RebelModel();
         BeanUtils.copyProperties(rebelModelOptional.get(), rebelModel);
 
         LocalizationModel localizationModel = new LocalizationModel();
         BeanUtils.copyProperties(localizationDto, localizationModel);
 
+        localizationModel.setPlanetName(ConvertEnum(localizationDto.getPlanetName()));
         rebelModel.setLocalization(localizationModel);
+        ;
 
         rebelService.save(rebelModel);
 
@@ -52,12 +65,11 @@ public class LocalizationController {
     public Map<String, String> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
 
-        ex.getBindingResult().getAllErrors().forEach(
-                (error) -> {
-                    String fieldName = ((FieldError) error).getField();
-                    String errorMessage = error.getDefaultMessage();
-                    errors.put(fieldName, errorMessage);
-                });
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
         return errors;
     }
 }
