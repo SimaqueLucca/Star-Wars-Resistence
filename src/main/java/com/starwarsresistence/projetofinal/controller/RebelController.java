@@ -1,12 +1,10 @@
 package com.starwarsresistence.projetofinal.controller;
 
 import com.starwarsresistence.projetofinal.dto.RebelDto;
-import com.starwarsresistence.projetofinal.model.ItemEnum;
+import com.starwarsresistence.projetofinal.exception.NotFoundException;
 import com.starwarsresistence.projetofinal.model.RebelModel;
 import com.starwarsresistence.projetofinal.service.RebelService;
 
-import org.bson.types.ObjectId;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +16,10 @@ import java.util.*;
 
 import javax.validation.Valid;
 
-import static com.starwarsresistence.projetofinal.model.ItemEnum.*;
-import static com.starwarsresistence.projetofinal.model.LocalizationEnum.PlanetExist;
 
 @RestController
 @RequestMapping("/rebel")
 public class RebelController {
-
     @Autowired
     private RebelService rebelService;
 
@@ -34,37 +29,19 @@ public class RebelController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createRebel(@RequestBody @Valid RebelDto rebelDto) {
-
-        Boolean itemExistResult = ItemExist(rebelDto.getItems());
-
-        if (!itemExistResult) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reported items do not exist. Available items: ARMA, MUNICAO, AGUA, COMIDA ");
-        }
-
-        Boolean planetExistResult = PlanetExist(rebelDto.getLocalization().getPlanetName().toString());
-
-        if (!planetExistResult) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reported items do not exist. Available items: TATOOINE, ALDERAAN, YAVIN, HOTH, DAGOBAH, BESPIN, ENDOR, NABOO, CORUSCANT, KAMINO ");
-        }
-
-        List<ItemEnum> newRebelItems = new ArrayList<>();
-        newRebelItems = ConvertEnum(rebelDto.getItems());
-
-        RebelModel rebelModel = new RebelModel();
-        BeanUtils.copyProperties(rebelDto, rebelModel);
-        rebelModel.setItems(newRebelItems);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(rebelService.save(rebelModel));
+    public ResponseEntity<Object> createRebel(@RequestBody @Valid RebelDto rebelDto) throws NotFoundException {
+        RebelModel rebelModel = rebelService.save(rebelDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(rebelModel);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getRebelById(@PathVariable ObjectId id) {
-        Optional<RebelModel> rebelModelOptional = rebelService.findById(id);
-        if (!rebelModelOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rebel not found");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(rebelModelOptional);
+    public ResponseEntity<RebelModel> getRebelById(@PathVariable String id) {
+        return ResponseEntity.status(HttpStatus.OK).body(rebelService.getRebel(id));
+    }
+
+    @PostMapping("/report-traitor/{id}")
+    public String reportTraitor(@PathVariable String id) throws NotFoundException {
+        return rebelService.saveReport(id);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -79,5 +56,4 @@ public class RebelController {
         });
         return errors;
     }
-
 }

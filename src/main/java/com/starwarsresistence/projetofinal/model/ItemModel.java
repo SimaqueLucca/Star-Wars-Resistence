@@ -7,9 +7,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
-@Document("TB_LOCALIZATION")
-public class LocalizationModel {
-    private Double longitude;
-    private Double latitude;
+@Document("TB_ITEM")
+public class ItemModel {
     private String name;
+    private int value;
 }

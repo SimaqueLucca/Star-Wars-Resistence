@@ -1,75 +1,44 @@
 package com.starwarsresistence.projetofinal.controller;
 
 import com.starwarsresistence.projetofinal.dto.LocalizationDto;
+import com.starwarsresistence.projetofinal.exception.NotFoundException;
 import com.starwarsresistence.projetofinal.model.LocalizationModel;
 import com.starwarsresistence.projetofinal.model.RebelModel;
+import com.starwarsresistence.projetofinal.service.LocalizationService;
 import com.starwarsresistence.projetofinal.service.RebelService;
-import org.bson.types.ObjectId;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.function.EntityResponse;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static com.starwarsresistence.projetofinal.model.LocalizationEnum.ConvertEnum;
-import static com.starwarsresistence.projetofinal.model.LocalizationEnum.PlanetExist;
 
 @RestController
 @RequestMapping("/localization")
 public class LocalizationController {
+    @Autowired
+    RebelService rebelService;
 
     @Autowired
-    private RebelService rebelService;
+    LocalizationService localizationService;
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> changeLocalization(@RequestBody @Valid LocalizationDto localizationDto, @PathVariable ObjectId id) {
+    public ResponseEntity<Object> updatelocalization(@RequestBody @Valid LocalizationDto localizationDto, @PathVariable String id) throws NotFoundException {
+        rebelService.rebelExists(id);
+        RebelModel rebelModel = rebelService.getRebel(id);
 
-        Boolean planetExistResult = PlanetExist(localizationDto.getPlanetName().toString());
-
-        if (!planetExistResult) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Reported items do not exist. Available items: TATOOINE, ALDERAAN, YAVIN, HOTH, DAGOBAH, BESPIN, ENDOR, NABOO, CORUSCANT, KAMINO ");
-        }
-
-        Optional<RebelModel> rebelModelOptional = rebelService.findById(id);
-
-        if (!rebelModelOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rebel not found");
-        }
-
-        RebelModel rebelModel = new RebelModel();
-        BeanUtils.copyProperties(rebelModelOptional.get(), rebelModel);
+        localizationService.planetExists(localizationDto.getName());
+        localizationService.coordinateIsNull(localizationDto.getLatitude());
+        localizationService.coordinateIsNull(localizationDto.getLongitude());
 
         LocalizationModel localizationModel = new LocalizationModel();
-        BeanUtils.copyProperties(localizationDto, localizationModel);
-
-        localizationModel.setPlanetName(ConvertEnum(localizationDto.getPlanetName()));
+        localizationModel.setName(localizationDto.getName());
+        localizationModel.setLongitude(localizationDto.getLongitude());
+        localizationModel.setLatitude(localizationDto.getLatitude());
         rebelModel.setLocalization(localizationModel);
-        ;
 
         rebelService.save(rebelModel);
 
         return ResponseEntity.status(HttpStatus.OK).body(localizationModel);
-
-    }
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationException(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return errors;
     }
 }

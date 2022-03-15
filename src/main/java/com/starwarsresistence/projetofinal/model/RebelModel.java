@@ -13,14 +13,14 @@ import java.util.List;
 @Setter
 @Document("TB_REBEL")
 public class RebelModel {
-
     @MongoId(value = FieldType.OBJECT_ID)
     private String id;
 
     private String name;
     private Integer age;
-    private String gender;
+    private GenderModel gender;
     private LocalizationModel localization;
-    private List<ItemEnum> items;
+    private List<ItemModel> items;
     private Integer traitorCount;
+    private Boolean traitor;
 }
