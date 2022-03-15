@@ -30,8 +30,7 @@ public class RebelController {
 
     @PostMapping
     public ResponseEntity<Object> createRebel(@RequestBody @Valid RebelDto rebelDto) throws NotFoundException {
-        RebelModel rebelModel = rebelService.save(rebelDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(rebelModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(rebelService.save(rebelDto));
     }
 
     @GetMapping("/{id}")

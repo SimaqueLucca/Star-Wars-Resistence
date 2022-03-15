@@ -9,8 +9,6 @@ import java.util.List;
 
 @Repository
 public interface LocalizationRepository extends MongoRepository<LocalizationModel, String> {
-    @Query("{'name': ?0 }")
     List<LocalizationModel> findByName(String planetName);
-
     List<LocalizationModel> getByNameNotNull();
 }

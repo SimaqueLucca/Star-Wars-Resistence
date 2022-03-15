@@ -9,9 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ItemRepository extends MongoRepository<ItemModel, String> {
-    @Query("{'name': ?0 }")
     List<ItemModel> findByName(String itemName);
 
-    @Query("{'name': ?0 }")
     List<ItemModel> getItemValue(String itemName);
 }
