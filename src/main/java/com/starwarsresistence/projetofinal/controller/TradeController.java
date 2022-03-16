@@ -25,11 +25,11 @@ public class TradeController {
     private TradeService tradeService;
 
     @PostMapping
-    public ResponseEntity<List<RebelModel>> tradeItem(@RequestBody @Valid TradeDto tradeDto) throws MethodArgumentNotValidException, NotFoundException {
+    public ResponseEntity<List<RebelModel>> tradeItem(@RequestBody @Valid TradeDto tradeDto) throws NotFoundException {
         return ResponseEntity.status(HttpStatus.OK).body(tradeService.tradeItem(tradeDto));
     }
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -41,4 +41,5 @@ public class TradeController {
         });
         return errors;
     }
+
 }

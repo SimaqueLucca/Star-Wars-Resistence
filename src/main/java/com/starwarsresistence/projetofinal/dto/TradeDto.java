@@ -1,5 +1,6 @@
 package com.starwarsresistence.projetofinal.dto;
 
+import com.starwarsresistence.projetofinal.model.ItemTradeModel;
 import com.starwarsresistence.projetofinal.validation.NotTraitor.NotTraitor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,15 +12,14 @@ import java.util.List;
 @Setter
 public class TradeDto {
 
-    @NotNull
     @NotTraitor()
     private String firstRebelID;
     @NotNull
-    private List<String> firstRebelItems;
+    private List<ItemTradeModel> firstRebelItems;
     @NotNull
     @NotTraitor()
     private String secondRebelID;
     @NotNull
-    private List<String> secondRebelItems;
+    private List<ItemTradeModel> secondRebelItems;
 
 }

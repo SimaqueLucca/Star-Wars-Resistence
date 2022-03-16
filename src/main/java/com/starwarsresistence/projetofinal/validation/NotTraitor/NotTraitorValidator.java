@@ -20,9 +20,6 @@ public class NotTraitorValidator implements ConstraintValidator<NotTraitor, Stri
     @Override
     public boolean isValid(String id, ConstraintValidatorContext constraintValidatorContext) {
         RebelModel rebelModel = rebelService.getRebel(id);
-        if (rebelModel.getTraitor()) {
-            return false;
-        }
-        return true;
+        return !rebelModel.getTraitor();
     }
 }

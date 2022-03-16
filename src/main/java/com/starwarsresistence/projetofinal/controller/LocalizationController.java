@@ -3,7 +3,6 @@ package com.starwarsresistence.projetofinal.controller;
 import com.starwarsresistence.projetofinal.dto.LocalizationDto;
 import com.starwarsresistence.projetofinal.exception.NotFoundException;
 import com.starwarsresistence.projetofinal.service.LocalizationService;
-import com.starwarsresistence.projetofinal.service.RebelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +14,6 @@ import javax.validation.Valid;
 @RequestMapping("/localization")
 public class LocalizationController {
 
-    @Autowired
-    private RebelService rebelService;
     @Autowired
     private LocalizationService localizationService;
 

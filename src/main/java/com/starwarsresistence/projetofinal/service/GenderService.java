@@ -3,14 +3,16 @@ package com.starwarsresistence.projetofinal.service;
 import com.starwarsresistence.projetofinal.exception.NotFoundException;
 import com.starwarsresistence.projetofinal.model.GenderModel;
 import com.starwarsresistence.projetofinal.repository.GenderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class GenderService {
-    @Autowired
-    private GenderRepository genderRepository;
+    private final GenderRepository genderRepository;
+
+    public GenderService(GenderRepository genderRepository) {
+        this.genderRepository = genderRepository;
+    }
 
     public void genderExists(String gender) throws NotFoundException {
 
@@ -19,7 +21,7 @@ public class GenderService {
         }
     }
 
-    public GenderModel getGenderData(String value)  {
+    public GenderModel getGenderData(String value) {
         return genderRepository.getGenderData(value).get(0);
     }
 }

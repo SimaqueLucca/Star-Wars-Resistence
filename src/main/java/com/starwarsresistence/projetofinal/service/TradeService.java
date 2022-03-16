@@ -3,10 +3,9 @@ package com.starwarsresistence.projetofinal.service;
 import com.starwarsresistence.projetofinal.dto.TradeDto;
 import com.starwarsresistence.projetofinal.exception.NotFoundException;
 import com.starwarsresistence.projetofinal.model.ItemModel;
+import com.starwarsresistence.projetofinal.model.ItemTradeModel;
 import com.starwarsresistence.projetofinal.model.RebelModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,31 +13,35 @@ import java.util.List;
 @Service
 public class TradeService {
 
-    @Autowired
-    private RebelService rebelService;
-    @Autowired
-    private ItemService itemService;
+    private final RebelService rebelService;
+    private final ItemService itemService;
 
-    public List<RebelModel> tradeItem(TradeDto tradeDto) throws MethodArgumentNotValidException, NotFoundException {
+    public TradeService(ItemService itemService, RebelService rebelService) {
+        this.itemService = itemService;
+        this.rebelService = rebelService;
+    }
 
-        itemService.itemsExists(tradeDto.getFirstRebelItems());
-        itemService.itemsExists(tradeDto.getSecondRebelItems());
+
+    public List<RebelModel> tradeItem(TradeDto tradeDto) throws NotFoundException {
 
         itemService.checkInventory(tradeDto.getFirstRebelItems(), tradeDto.getFirstRebelID());
         itemService.checkInventory(tradeDto.getSecondRebelItems(), tradeDto.getSecondRebelID());
 
-        List<ItemModel> firstRebelItems = itemService.listOFItemModel(tradeDto.getFirstRebelItems());
-        List<ItemModel> secondRebelItems = itemService.listOFItemModel(tradeDto.getSecondRebelItems());
+        List<ItemTradeModel> firstRebelItems = tradeDto.getFirstRebelItems();
+        List<ItemTradeModel> secondRebelItems = tradeDto.getSecondRebelItems();
+
+        itemService.itemModelExists(tradeDto.getFirstRebelItems());
+        itemService.itemModelExists(tradeDto.getSecondRebelItems());
 
         RebelModel firstRebelModel = rebelService.getRebel(tradeDto.getFirstRebelID());
         RebelModel secondRebelModel = rebelService.getRebel(tradeDto.getSecondRebelID());
 
         if (itemService.checkListValue(firstRebelItems) != itemService.checkListValue(secondRebelItems)) {
-            throw new IllegalArgumentException("The rebel's list of items must have the same value");
+            throw new NotFoundException("The rebel's list of items must have the same value");
         }
 
-        firstRebelModel.setItems(secondRebelItems);
-        secondRebelModel.setItems(firstRebelItems);
+        firstRebelModel.setItems(itemModelList(secondRebelItems));
+        secondRebelModel.setItems(itemModelList(firstRebelItems));
 
         rebelService.save(firstRebelModel);
         rebelService.save(secondRebelModel);
@@ -49,6 +52,20 @@ public class TradeService {
 
         return rebelModelList;
 
+    }
+
+    public List<ItemModel> itemModelList(List<ItemTradeModel> itemTradeModelList) throws NotFoundException {
+
+        List<ItemModel> itemModelList = new ArrayList<>();
+
+        for (ItemTradeModel itemTradeModel : itemTradeModelList) {
+            for (int i = 0; i < itemTradeModel.getQuantity(); i++) {
+                ItemModel itemModel = itemService.getItemByName(itemTradeModel.getItemName());
+                itemModelList.add(itemModel);
+            }
+        }
+
+        return itemModelList;
     }
 
 }

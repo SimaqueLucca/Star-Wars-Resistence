@@ -39,7 +39,7 @@ public class RebelController {
     }
 
     @PostMapping("/report-traitor/{id}")
-    public String reportTraitor(@PathVariable String id) throws NotFoundException {
+    public String reportTraitor(@PathVariable String id) {
         return rebelService.saveReport(id);
     }
 

@@ -21,11 +21,11 @@ public class LocalizationService {
     public void planetExists(String planet) throws NotFoundException {
 
         if (localizationRepository.findByName(planet).isEmpty()) {
-            String planets = "";
+            StringBuilder planets = new StringBuilder();
             List<LocalizationModel> localizationModelList = localizationRepository.getByNameNotNull();
 
             for (LocalizationModel localizationModel : localizationModelList) {
-                planets = planets + "\n" + localizationModel.getName();
+                planets.append("\n").append(localizationModel.getName());
             }
 
             if (planet == null) throw new NotFoundException("Planet cannot be null. All planets. Planets: " + planets);

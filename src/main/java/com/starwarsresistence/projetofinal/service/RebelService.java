@@ -27,7 +27,6 @@ public class RebelService {
         this.localizationService = localizationService;
     }
 
-
     public List<RebelModel> findAll() {
         return rebelRepository.findAll();
     }
@@ -114,4 +113,6 @@ public class RebelService {
 
         return percentageReportModel;
     }
+
+
 }

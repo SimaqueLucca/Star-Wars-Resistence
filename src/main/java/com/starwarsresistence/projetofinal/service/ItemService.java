@@ -2,9 +2,9 @@ package com.starwarsresistence.projetofinal.service;
 
 import com.starwarsresistence.projetofinal.exception.NotFoundException;
 import com.starwarsresistence.projetofinal.model.ItemModel;
+import com.starwarsresistence.projetofinal.model.ItemTradeModel;
 import com.starwarsresistence.projetofinal.model.RebelModel;
 import com.starwarsresistence.projetofinal.repository.ItemRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +14,16 @@ import java.util.Optional;
 
 @Service
 public class ItemService {
-    @Autowired
-    private ItemRepository itemRepository;
-
+    private final ItemRepository itemRepository;
     private final RebelService rebelService;
 
-    public ItemService(@Lazy RebelService rebelService) {
+    public ItemService(@Lazy RebelService rebelService, ItemRepository itemRepository) {
         this.rebelService = rebelService;
+        this.itemRepository = itemRepository;
+    }
+
+    public int itemValue(String name) {
+        return itemRepository.getItemModelsByName(name).get(0).getValue();
     }
 
     public void itemsExists(List<String> items) throws NotFoundException {
@@ -32,8 +35,62 @@ public class ItemService {
         }
     }
 
-    public int itemValue(String name) {
-        return itemRepository.getItemModelsByName(name).get(0).getValue();
+
+    public int checkListValue(List<ItemTradeModel> itemTradeModelList) {
+        int listValue = 0;
+
+        for (ItemTradeModel item : itemTradeModelList) {
+            for (int i = 0; i < item.getQuantity(); i++) {
+                listValue += itemRepository.getItemModelsByName(item.getItemName()).get(0).getValue();
+            }
+        }
+
+        System.out.print(listValue);
+
+        return listValue;
+    }
+
+    public void checkInventory(List<ItemTradeModel> itemTradeModelList, String id) throws NotFoundException {
+
+        for (ItemTradeModel itemTradeModel : itemTradeModelList) {
+
+            RebelModel rebelModel = rebelService.getRebel(id);
+
+            List<ItemModel> rebelItemModelList = rebelModel.getItems();
+
+            for (int i = 0; i < itemTradeModel.getQuantity(); i++) {
+
+                Optional<ItemModel> optionalItemModel = rebelItemModelList.stream().filter(item -> item.getName().equals(itemTradeModel.getItemName())).findFirst();
+
+                if (optionalItemModel.isEmpty()) {
+                    throw new NotFoundException("The rebel does not have the item or does not have the quantity informed: " + itemTradeModel.getItemName());
+                }
+
+                rebelItemModelList.remove(optionalItemModel.get());
+            }
+
+        }
+
+
+    }
+
+    public void itemModelExists(List<ItemTradeModel> firstRebelItems) throws NotFoundException {
+
+        for (ItemTradeModel itemTradeModel : firstRebelItems) {
+            if (itemRepository.findByName(itemTradeModel.getItemName()).isEmpty()) {
+                throw new NotFoundException("Item " + itemTradeModel + " not found");
+            }
+        }
+
+    }
+
+    public ItemModel getItemByName(String name) throws NotFoundException {
+
+        if (itemRepository.findByName(name).isEmpty()) {
+            throw new NotFoundException("Item " + name + " not found");
+        }
+
+        return itemRepository.findByName(name).get(0);
     }
 
     public List<ItemModel> listOFItemModel(List<String> itemDtoList) {
@@ -49,33 +106,4 @@ public class ItemService {
         return itemModelList;
     }
 
-    public int checkListValue(List<ItemModel> itemModelList) {
-        int listValue = 0;
-
-        for (ItemModel itemModel : itemModelList) {
-            listValue += itemRepository.getItemModelsByName(itemModel.getName()).get(0).getValue();
-        }
-
-        return listValue;
-    }
-
-    public void checkInventory(List<String> itemList, String id) throws NotFoundException {
-
-        int index = 0;
-        RebelModel rebelModel = rebelService.getRebel(id);
-        List<ItemModel> itemModelList = rebelModel.getItems();
-
-        for (String item : itemList) {
-            if (itemModelList.stream().noneMatch(itemModel -> itemModel.getName().equals(item))) {
-                throw new NotFoundException("The rebel does not have the item or does not have the quantity informed: " + item);
-            }
-
-            Optional<ItemModel> optionalItemModel = itemModelList.stream().filter(itemModel -> itemModel.getName().equals(item)).findFirst();
-            if (!optionalItemModel.isPresent()) {
-                throw new NotFoundException("The rebel does not have the item or does not have the quantity informed: " + item);
-            }
-            itemModelList.remove(optionalItemModel.get());
-        }
-
-    }
 }
