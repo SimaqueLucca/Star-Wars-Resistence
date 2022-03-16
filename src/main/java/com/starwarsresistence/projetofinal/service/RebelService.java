@@ -2,13 +2,11 @@ package com.starwarsresistence.projetofinal.service;
 
 import com.starwarsresistence.projetofinal.dto.RebelDto;
 import com.starwarsresistence.projetofinal.exception.NotFoundException;
-import com.starwarsresistence.projetofinal.model.GenderModel;
-import com.starwarsresistence.projetofinal.model.ItemModel;
-import com.starwarsresistence.projetofinal.model.LocalizationModel;
-import com.starwarsresistence.projetofinal.model.RebelModel;
+import com.starwarsresistence.projetofinal.model.*;
 import com.starwarsresistence.projetofinal.repository.RebelRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +19,14 @@ public class RebelService {
     @Autowired
     private ItemService itemService;
     @Autowired
-    LocalizationService localizationService;
-    @Autowired
-    GenderService genderService;
+    private GenderService genderService;
+
+    private final LocalizationService localizationService;
+
+    public RebelService(@Lazy LocalizationService localizationService) {
+        this.localizationService = localizationService;
+    }
+
 
     public List<RebelModel> findAll() {
         return rebelRepository.findAll();
@@ -96,5 +99,19 @@ public class RebelService {
 
     public RebelModel getRebel(String id) {
         return rebelRepository.findById(id).get();
+    }
+
+    public PercentageReportModel getPercentageReport() {
+
+        PercentageReportModel percentageReportModel = new PercentageReportModel();
+        Double rebelCount = rebelRepository.countAllByAgeIsNotNull();
+        Double traitorCount = rebelRepository.countAllByTraitorIsTrue();
+        Double percentageTraitor = Math.floor((traitorCount / rebelCount) * 100);
+
+        percentageReportModel.setRebelCount(rebelCount);
+        percentageReportModel.setTraitorCount(traitorCount);
+        percentageReportModel.setTraitorPercentage(percentageTraitor);
+
+        return percentageReportModel;
     }
 }

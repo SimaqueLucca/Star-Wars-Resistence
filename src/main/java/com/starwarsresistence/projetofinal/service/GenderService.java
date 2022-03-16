@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GenderService {
     @Autowired
-    GenderRepository genderRepository;
+    private GenderRepository genderRepository;
 
     public void genderExists(String gender) throws NotFoundException {
 

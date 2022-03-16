@@ -2,6 +2,7 @@ package com.starwarsresistence.projetofinal.config;
 
 import com.starwarsresistence.projetofinal.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,7 +13,13 @@ public class ErrorHandle {
 
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     @ExceptionHandler()
-    public String ObjectNotFound(NotFoundException exception){
+    public String ObjectNotFound(NotFoundException exception) {
+        return exception.getMessage();
+    }
+
+    @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler()
+    public String InvalidTrade(MethodArgumentNotValidException exception) {
         return exception.getMessage();
     }
 
