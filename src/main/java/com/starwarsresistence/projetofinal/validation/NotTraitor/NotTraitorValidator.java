@@ -1,5 +1,6 @@
 package com.starwarsresistence.projetofinal.validation.NotTraitor;
 
+import com.starwarsresistence.projetofinal.exception.NotFoundException;
 import com.starwarsresistence.projetofinal.model.RebelModel;
 import com.starwarsresistence.projetofinal.service.RebelService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,11 +2,9 @@ package com.starwarsresistence.projetofinal.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Value;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Getter
@@ -16,12 +14,13 @@ public class RebelDto {
     @Size(min = 2)
     private String name;
     @NotNull(message = "Age cannot be null")
+    @Min(1) @Max(999)
     private Integer age;
     @NotNull(message = "Gender cannot be null")
     @Size(max = 1)
     private String gender;
-    @NotEmpty(message = "Items cannot be null")
-    private List<String> items;
+    @NotNull(message = "Items cannot be null")
+    private List<ItemDto> items;
     @NotNull (message = "Localization cannot be null")
     private LocalizationDto localization;
 }

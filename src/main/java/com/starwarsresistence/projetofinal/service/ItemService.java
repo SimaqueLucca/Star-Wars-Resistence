@@ -1,8 +1,8 @@
 package com.starwarsresistence.projetofinal.service;
 
+import com.starwarsresistence.projetofinal.dto.ItemDto;
 import com.starwarsresistence.projetofinal.exception.NotFoundException;
 import com.starwarsresistence.projetofinal.model.ItemModel;
-import com.starwarsresistence.projetofinal.model.ItemTradeModel;
 import com.starwarsresistence.projetofinal.model.RebelModel;
 import com.starwarsresistence.projetofinal.repository.ItemRepository;
 import org.springframework.context.annotation.Lazy;
@@ -26,62 +26,56 @@ public class ItemService {
         return itemRepository.getItemModelsByName(name).get(0).getValue();
     }
 
-    public void itemsExists(List<String> items) throws NotFoundException {
+    public void itemsExists(List<ItemDto> items) throws NotFoundException {
 
-        for (String item : items) {
-            if (itemRepository.findByName(item).isEmpty()) {
-                throw new NotFoundException("Item " + item + " not found");
+        for (ItemDto item : items) {
+            if (itemRepository.findByName(item.getItemName()).isEmpty()) {
+                throw new NotFoundException("Item " + item.getItemName() + " not found");
+            }
+            try {
+                if (item.getQuantity() == 0) {
+                    throw new NotFoundException("Item quantity cannot be 0 or null");
+                }
+            } catch (Exception exception) {
+                throw new NotFoundException("Item quantity cannot be 0 or null");
             }
         }
     }
 
-
-    public int checkListValue(List<ItemTradeModel> itemTradeModelList) {
+    public int checkListValue(List<ItemDto> itemTradeModelList) {
         int listValue = 0;
 
-        for (ItemTradeModel item : itemTradeModelList) {
+        for (ItemDto item : itemTradeModelList) {
             for (int i = 0; i < item.getQuantity(); i++) {
                 listValue += itemRepository.getItemModelsByName(item.getItemName()).get(0).getValue();
             }
         }
-
         System.out.print(listValue);
-
         return listValue;
     }
 
-    public void checkInventory(List<ItemTradeModel> itemTradeModelList, String id) throws NotFoundException {
+    public void checkInventory(List<ItemDto> itemTradeModelList, String id) throws NotFoundException {
 
-        for (ItemTradeModel itemTradeModel : itemTradeModelList) {
-
+        for (ItemDto itemTradeModel : itemTradeModelList) {
             RebelModel rebelModel = rebelService.getRebel(id);
-
             List<ItemModel> rebelItemModelList = rebelModel.getItems();
-
             for (int i = 0; i < itemTradeModel.getQuantity(); i++) {
-
                 Optional<ItemModel> optionalItemModel = rebelItemModelList.stream().filter(item -> item.getName().equals(itemTradeModel.getItemName())).findFirst();
-
                 if (optionalItemModel.isEmpty()) {
                     throw new NotFoundException("The rebel does not have the item or does not have the quantity informed: " + itemTradeModel.getItemName());
                 }
-
                 rebelItemModelList.remove(optionalItemModel.get());
             }
-
         }
-
-
     }
 
-    public void itemModelExists(List<ItemTradeModel> firstRebelItems) throws NotFoundException {
+    public void itemModelExists(List<ItemDto> firstRebelItems) throws NotFoundException {
 
-        for (ItemTradeModel itemTradeModel : firstRebelItems) {
+        for (ItemDto itemTradeModel : firstRebelItems) {
             if (itemRepository.findByName(itemTradeModel.getItemName()).isEmpty()) {
                 throw new NotFoundException("Item " + itemTradeModel + " not found");
             }
         }
-
     }
 
     public ItemModel getItemByName(String name) throws NotFoundException {
@@ -93,14 +87,22 @@ public class ItemService {
         return itemRepository.findByName(name).get(0);
     }
 
-    public List<ItemModel> listOFItemModel(List<String> itemDtoList) {
+    public List<ItemModel> listOFItemModel(List<ItemDto> itemDtoList) throws NotFoundException {
         List<ItemModel> itemModelList = new ArrayList<>();
 
-        for (String item : itemDtoList) {
+        for (ItemDto item : itemDtoList) {
+
+            if (item.getQuantity() > 30) {
+                throw new NotFoundException("The quantity of items cannot be more than 30");
+            }
+
             ItemModel itemModel = new ItemModel();
-            itemModel.setName(item);
-            itemModel.setValue(itemValue(item));
-            itemModelList.add(itemModel);
+            itemModel.setName(item.getItemName());
+            itemModel.setValue(itemValue(item.getItemName()));
+
+            for (int i = 0; i < item.getQuantity(); i++) {
+                itemModelList.add(itemModel);
+            }
         }
 
         return itemModelList;

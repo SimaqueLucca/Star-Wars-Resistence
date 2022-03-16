@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static java.lang.Float.NaN;
+
 @Service
 public class RebelService {
     @Autowired
@@ -90,7 +92,6 @@ public class RebelService {
     }
 
     public void rebelExists(String id) throws NotFoundException {
-
         if (rebelRepository.findById(id).isEmpty()) {
             throw new NotFoundException("Rebel with id " + id + " not found");
         }
